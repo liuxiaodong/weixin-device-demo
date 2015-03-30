@@ -1,0 +1,7 @@
+node_modules
+dump.rdb
+bin
+config/*
+redis.conf
+!config/_sample.json
+*~
