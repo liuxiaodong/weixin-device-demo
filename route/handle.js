@@ -6,7 +6,7 @@ var db = require('../db/db').db_wechat();
 module.exports = function(app, wx){
 
   /**
-   * jssdk 签名
+   * jssdk 签名， 供H5页面调用
    */
   app.get('/sign', function(req, res){
     var url = req.query.url;
@@ -24,6 +24,10 @@ module.exports = function(app, wx){
 
 };
 
+/**
+ * 签名需要的 ticket 
+ * 获取 ticket 并缓存
+ */
 function getTicket(access_token, cb){
   db.get("WX:jsapi:ticket", function(err, ticket){
     if(err) return cb(err);

@@ -3,7 +3,9 @@ var base64 = require('base64');
 var gb2312 = require('encode-gb2312');
 
 module.exports = function(wx){
-
+  /**
+   * 处理微信用户发送到公众号的文本消息
+   */
   wx.text(/\S/, function(req, res){
     var openid = req.user.openid;
     var content = req.content;
@@ -31,6 +33,7 @@ module.exports = function(wx){
   });
 
   /**
+   * 接受设备发送到的消息并回复
    * wx 模块在 npm 上可能没有 device 接口，但可以下载源码自己编译
    */
   /**

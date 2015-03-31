@@ -2,10 +2,15 @@
 
   var url = location.href.replace(location.hash, "");
   url = encodeURIComponent(url);
-  var deviceId = ""; // 需要连接设备的deviceID
+
+  var deviceId = "112233445566"; // 需要连接设备的deviceID
   var buf = "aGVsbG8="; // 发送给设备的数据，base64编码
+
+  /**
+   * 去后端获取 config 需要的签名
+   * @param url 本页面的url（去掉hash部分）
+   */
   $.get(baseUrl + "/sign?url="+url, function(data){
-    openid = data.openid;
     signData = {
       "verifyAppId" : data.appid,
       "verifyTimestamp" : data.timestamp,
@@ -32,7 +37,9 @@
     });
   });
 
-
+  /**
+   * config 完成后绑定各种事件
+   */
   wx.ready(function (){
     console.log("config", "ready");
     WeixinJSBridge.on('onWXDeviceBindStateChange', function(argv) {
@@ -59,10 +66,16 @@
 
   });
 
+  /**
+   * config 失败
+   */
   wx.error(function (res) {
     alert(JSON.stringify(res));
   });
 
+  /**
+   * 事件绑定初始化
+   */
 	function onConfigReady() {
 		document.querySelector('#openWXDeviceLib').addEventListener('touchstart', function(e){
       openWXDeviceLib();
@@ -110,6 +123,9 @@
     });
   }
 
+  /**
+   * 各个 JSSDK 的 API 接口实现 
+   */
 
   function openWXDeviceLib(){
     WeixinJSBridge.invoke('openWXDeviceLib', {}, function(res){

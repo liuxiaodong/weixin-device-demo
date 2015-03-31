@@ -30,14 +30,18 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(morgan('combined'));
 
+// H5 的demo页面
 app.get("/wechat/demo", function(req, res, next){
   res.render('index');
 });
 
+// 微信公众号配置的URL 路由
 app.use('/wechat', wx);
 
+// 出来微信公众号的各种事件（微信用户发来消息，设备发来消息）
 require('./route/wechat')(wx);
 
+// H5页面需要的接口（获取签名）
 require('./route/handle')(app, wx);
 
 app.get('/*', function(req, res, next){
