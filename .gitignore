@@ -4,4 +4,5 @@ bin
 config/*
 redis.conf
 !config/_sample.json
+public/scripts/config.js
 *~
