@@ -9,6 +9,7 @@ if (!fs.existsSync(accessTokenFile)) {
 }
 
 var weixin = require("weixin-trap")({
+  attrNameProcessors: 'underscored',
   saveToken: function(token, callback){
     var tokenStr = JSON.stringify(token);
     fs.writeFile(accessTokenFile, tokenStr, {encoding: 'utf8'}, callback);
