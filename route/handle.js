@@ -5,15 +5,18 @@ var weixin = require('../util/weixin');
 
 var jsApiTicketFile = path.join(__dirname, '../jsapi_ticket.txt');
 
-var saveTicketToken = function(token) {
+if (!fs.existsSync(jsApiTicketFile)) {
+  fs.appendFileSync(jsApiTicketFile, '', {encoding: 'utf8'});
+}
+
+var saveTicketToken = function(token, callback) {
   token.saveTime = new Date().getTime();
   var tokenStr = JSON.stringify(token);
   fs.writeFile(jsApiTicketFile, tokenStr, {encoding: 'utf8'}, callback);
 };
 
-var getTicketToken = function() { 
-console.log(jsApiTicketFile);
-  fs.readFile(jsApiTicketFile, {encoding: 'uft8'}, function(err, str){
+var getTicketToken = function(callback) { 
+  fs.readFile(jsApiTicketFile, {encoding: 'utf8'}, function(err, str){
     var token;
     if (str) {
       token = JSON.parse(str);

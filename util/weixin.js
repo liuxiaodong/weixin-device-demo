@@ -2,15 +2,19 @@ var path = require('path');
 var fs = require('fs');
 var config = require('config');
 
-var accessTokenFile = path.join(__dirname, './access_token.txt');
+var accessTokenFile = path.join(__dirname, '../access_token.txt');
+
+if (!fs.existsSync(accessTokenFile)) {
+  fs.appendFileSync(accessTokenFile, '', {encoding: 'utf8'});
+}
 
 var weixin = require("weixin-trap")({
   saveToken: function(token, callback){
     var tokenStr = JSON.stringify(token);
     fs.writeFile(accessTokenFile, tokenStr, {encoding: 'utf8'}, callback);
   },
-  getToken: function(err){
-    fs.readFile(accessTokenFile, {encoding: 'uft8'}, function(err, str){
+  getToken: function(callback){
+    fs.readFile(accessTokenFile, {encoding: 'utf8'}, function(err, str){
       var token;
       if (str) {
         token = JSON.parse(str);
