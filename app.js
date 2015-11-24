@@ -6,7 +6,7 @@ var weixin = require('./util/weixin');
 var app = express();
 app.set('port', process.env.PORT || 3000);
 
-app.use(morgan('combined'));
+app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', __dirname + '/public/views');
 app.engine('html', require('ejs').renderFile);
@@ -16,7 +16,7 @@ app.set('view engine', 'html');
 app.use('/wechat', weixin.trap);
 
 // H5页面需要的接口（获取签名）
-require('./route/handle');
+require('./route/handle')(app);
 
 // H5 的demo页面
 app.get('/*', function(req, res, next){

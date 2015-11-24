@@ -3,7 +3,6 @@ var fs = require('fs');
 var config = require('config');
 
 var accessTokenFile = path.join(__dirname + '/access_token.txt');
-var jsApiTicketFile = path.join(__dirname + '/jsapi_ticket.txt');
 
 var weixin = require("weixin-trap")({
   saveToken: function(token, callback){
