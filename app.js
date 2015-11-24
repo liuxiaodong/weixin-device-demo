@@ -1,10 +1,12 @@
 var path = require('path');
 var express = require('express');
+var morgan = require('morgan');
 var weixin = require('./util/weixin');
 
 var app = express();
 app.set('port', process.env.PORT || 3000);
 
+app.use(morgan('combined'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', __dirname + '/public/views');
 app.engine('html', require('ejs').renderFile);
