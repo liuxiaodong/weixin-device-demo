@@ -2,7 +2,7 @@ var path = require('path');
 var fs = require('fs');
 var config = require('config');
 
-var accessTokenFile = path.join(__dirname + '/access_token.txt');
+var accessTokenFile = path.join(__dirname, './access_token.txt');
 
 var weixin = require("weixin-trap")({
   saveToken: function(token, callback){
