@@ -45,6 +45,7 @@ module.exports = function(app){
       if (!token) return res.json({});
       var ret = weixin.util.getJsConfig(token.ticket, url);
       ret.appid = config.appid;
+      console.log(ret, token);
       res.json(ret);
     });
   });
