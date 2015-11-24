@@ -1,6 +1,6 @@
 {
   "name": "weixin-device-demo",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "description": "微信H5页面控制蓝牙硬件demo",
   "main": "app.js",
   "dependencies": {
