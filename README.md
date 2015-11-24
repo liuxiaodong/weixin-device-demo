@@ -19,7 +19,7 @@
 
 	URL, Token, JS接口安全域名等信息  
 	URL 最好 `http://your_domain.com/wechat`  
-	不然需要修改 app.js 中的 `app.use('/wechat', wx);` 路由
+	不然需要修改 app.js 中的 `app.use('/wechat', weixin.trap);` 路由
 	
 4. 克隆代码 
 
@@ -34,9 +34,13 @@
 	
 	`cp config/_sample.json development.json` 
 	
-	修改 development.json 里面配置,比如 weixin 部分的 id, token, app_id, app_secret 为自己公众号的配置信息。
+	修改 development.json 里面配置,比如 weixin 部分的 id, token, appid, app_secret 为自己公众号的配置信息。
 
-6. 修改前端的配置文件 `./public/scripts/config.js` 里的 baseUrl 为自己域名的url
+6. 拷贝前端页面配置文件
+
+	`cp public/scripts/config.sample.js public/scripts/config.js`  
+	
+	并修改里面的 baseUrl 为自己域名的url
 
 7. 发布到服务，打开微信关注公众号进入链接 http://your_domain/wechat/demo 即可测试微信蓝牙硬件流程。
 	* 在调用其他接口前必须先调用 初始化设备库(openWXDeviceLib) 接口
