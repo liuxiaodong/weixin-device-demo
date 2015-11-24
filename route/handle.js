@@ -1,57 +1,52 @@
+var fs = require('fs');
+var path = require('path');
 var config = require('config');
-var request = require('request');
-var sign = require('../util/sign');
-var db = require('../db/db').db_wechat();
+var weixin = require('../util/weixin');
 
-module.exports = function(app, wx){
+var jsApiTicketFile = path.join(__dirname + '/jsapi_ticket.txt');
+
+var saveTicketToken = function(token) {
+  token.saveTime = new Date().getTime();
+  var tokenStr = JSON.stringify(token);
+  fs.writeFile(jsApiTicketFile, tokenStr, {encoding: 'utf8'}, callback);
+};
+
+var getTicketToken = function() {  
+  fs.readFile(jsApiTicketFile, {encoding: 'uft8'}, function(err, str){
+    var token;
+    if (str) {
+      token = JSON.parse(str);
+    }
+    var time = new Date().getTime();
+    if (token && (time - token.saveTime) < (token.expires_in - 120)) {
+      return callback(null, token);
+    }
+    weixin.api.getTicket(config.weixin.id, 'jsapi', function(err, token){
+      if (token) {
+        saveTicketToken(token);
+      }
+      callback(null, token);
+    });
+  });  
+};
+
+module.exports = function(app){
 
   /**
    * jssdk 签名， 供H5页面调用
    */
   app.get('/sign', function(req, res){
     var url = req.query.url;
-    if(!url) return res.json(400, {errMsg: "need url"});
+    if (!url) {
+      return res.status(400).json({errMsg: "need url"});
+    }
     url = decodeURIComponent(url);
-    var access_token = wx.access_token();
-    if(!access_token) return res.json(400, {errMsg:'access_token empty'});
-    getTicket(access_token, function(err, ticket){
-      if(err) return res.json(400, err);
-      var ret = sign(ticket, url);
-      ret.appid = config.weixin.app_id;
+    getTicketToken(function(err, token){
+      if (!token) return res.json({});
+      var ret = weixin.util.getJsConfig(token.ticket, url);
+      ret.appid = config.appid;
       res.json(ret);
     });
   });
 
 };
-
-/**
- * 签名需要的 ticket 
- * 获取 ticket 并缓存
- */
-function getTicket(access_token, cb){
-  db.get("WX:jsapi:ticket", function(err, ticket){
-    if(err) return cb(err);
-    if(ticket) return cb(null, ticket);
-    request("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + access_token + "&type=jsapi", function(err, res, body){
-      if(err) {
-        console.log(err);
-        return cb(err);
-      }
-      if(typeof body === "string"){
-        try{
-          body = JSON.parse(body);
-        }catch(e){
-          console.error("body parse error: ", e);
-        }
-      }
-      var _ticket = body.ticket;
-      var exp = Number(body.expires_in) || 7200;
-      exp = exp - 60;
-      if(!_ticket) return cb("get ticket error");
-      db.setex("WX:jsapi:ticket", exp, _ticket, function(err){
-        if(err) return cb(err);
-        return cb(null, _ticket);
-      });
-    });
-  });
-}

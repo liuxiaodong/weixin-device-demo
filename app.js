@@ -1,52 +1,24 @@
 var path = require('path');
 var express = require('express');
-var config = require('config');
-var morgan = require('morgan');
-
-var wx = require("wx")({
-  token: config.weixin.token,
-  app_id: config.weixin.app_id,
-  app_secret: config.weixin.app_secret,
-  redis_options: {
-    host: config.redis.host,
-    port: config.redis.port
-  }
-});
-
-
-var wxDevice = require('weixin-device');
-for(var prot in wxDevice){
-  wx[prot] = wxDevice[prot];
-}
-
-var path = require('path');
+var weixin = require('./util/weixin');
 
 var app = express();
-app.set('port', process.env.PORT || 5001);
+app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', __dirname + '/public/views');
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
-app.use(morgan('combined'));
-
-// H5 的demo页面
-app.get("/wechat/demo", function(req, res, next){
-  res.render('index');
-});
 
 // 微信公众号配置的URL 路由
-app.use('/wechat', wx);
-
-// 出来微信公众号的各种事件（微信用户发来消息，设备发来消息）
-require('./route/wechat')(wx);
+app.use('/wechat', weixin.trap);
 
 // H5页面需要的接口（获取签名）
-require('./route/handle')(app, wx);
+require('./route/handle');
 
+// H5 的demo页面
 app.get('/*', function(req, res, next){
-  var requestedView = path.join('./', req.url).split("?")[0];
-  res.render(requestedView);
+  res.render('index');
 });
 
 app.use(function(req, res, next) {

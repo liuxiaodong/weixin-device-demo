@@ -4,17 +4,10 @@
   "description": "微信H5页面控制蓝牙硬件demo",
   "main": "app.js",
   "dependencies": {
-    "base64": "^2.1.0",
-    "ejs": "^2.3.1",
-    "encode-gb2312": "^0.0.2",
-    "express": "^4.12.3",
     "config": "^1.12.0",
-    "morgan": "^1.5.2",
-    "redis": "^0.12.1",
-    "wx": "^0.0.25",
-    "request": "^2.54.0",
-    "underscore": "^1.8.2",
-    "weixin-device": "^0.0.3"
+    "ejs": "^2.3.4",
+    "express": "^4.12.3",
+    "weixin-trap": "0.0.9"
   },
   "devDependencies": {},
   "scripts": {
