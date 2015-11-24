@@ -49,7 +49,8 @@ module.exports = function(app){
       if (!token) return res.json({});
       var ret = weixin.util.getJsConfig(token.ticket, url);
       ret.appid = config.weixin.appid;
-      console.log(ret, token);
+      console.log('token:  ', token);      
+      console.log('signData:  ', ret);
       res.json(ret);
     });
   });
