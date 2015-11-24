@@ -1,11 +1,11 @@
-;(function(window, undefined){
+(function(window, undefined){
 
   var url = location.href.replace(location.hash, "");
   url = encodeURIComponent(url);
 
   var deviceId = "112233445566"; // 需要连接设备的deviceID
   var buf = "aGVsbG8="; // 发送给设备的数据，base64编码
-
+  var signData = {};
   /**
    * 去后端获取 config 需要的签名
    * @param url 本页面的url（去掉hash部分）
@@ -77,39 +77,38 @@
    * 事件绑定初始化
    */
 	function onConfigReady() {
-		document.querySelector('#openWXDeviceLib').addEventListener('touchstart', function(e){
+		document.querySelector('#openWXDeviceLib').addEventListener('touchend', function(e){
       openWXDeviceLib();
 		});
 
-		document.querySelector('#closeWXDeviceLib').addEventListener('touchstart', function(e){
+		document.querySelector('#closeWXDeviceLib').addEventListener('touchend', function(e){
       closeWXDeviceLib();
 		});
 
-		document.querySelector('#getWXDeviceInfos').addEventListener('touchstart', function(e){
+		document.querySelector('#getWXDeviceInfos').addEventListener('touchend', function(e){
       getWXDeviceInfos();
 		});
 
-		document.querySelector('#startScanWXDevice').addEventListener('touchstart', function(e){
+		document.querySelector('#startScanWXDevice').addEventListener('touchend', function(e){
       startScanWXDevice();
 		});
 
-		document.querySelector('#stopScanWXDevice').addEventListener('touchstart', function(e){
+		document.querySelector('#stopScanWXDevice').addEventListener('touchend', function(e){
       stopScanWXDevice();
 		});
 
-		document.querySelector('#connectWXDevice').addEventListener('touchstart', function(e){
+		document.querySelector('#connectWXDevice').addEventListener('touchend', function(e){
       connectWXDevice();
 		});
 
-		document.querySelector('#disconnectWXDevice').addEventListener('touchstart', function(e){
+		document.querySelector('#disconnectWXDevice').addEventListener('touchend', function(e){
       disconnectWXDevice();
 		});
 
-		document.querySelector('#sendDataToWXDevice').addEventListener('touchstart', function(e){
+		document.querySelector('#sendDataToWXDevice').addEventListener('touchend', function(e){
       sendDataToWXDevice();
 		});
-
-	};
+	}
 
   /*
    * jsapi接口的封装
@@ -128,47 +127,47 @@
    */
 
   function openWXDeviceLib(){
-    WeixinJSBridge.invoke('openWXDeviceLib', {}, function(res){
+    WeixinJSBridge.invoke('openWXDeviceLib', signData, function(res){
       console.log("openWXDeviceLib", res);
     });
   }
 
   function closeWXDeviceLib(){
-    WeixinJSBridge.invoke('closeWXDeviceLib', {}, function(res){
+    WeixinJSBridge.invoke('closeWXDeviceLib', signData, function(res){
       console.log("closeWXDeviceLib", res);
     });
   }
 
 
   function getWXDeviceInfos(){
-    WeixinJSBridge.invoke('getWXDeviceInfos', {}, function(res){
+    WeixinJSBridge.invoke('getWXDeviceInfos', signData, function(res){
       console.log("getWXDeviceInfos", res);
     });
   }
 
   function connectWXDevice(){
-    var _data = {"deviceId":deviceId};
+    var _data = mixin({"deviceId":deviceId}, signData);
     WeixinJSBridge.invoke('connectWXDevice', _data, function(res){
       console.log("connectWXDevice", res);
     });
   }
 
   function disconnectWXDevice(){
-    var _data = {"deviceId":deviceId};
+    var _data = mixin({"deviceId":deviceId}, signData);
     WeixinJSBridge.invoke('disconnectWXDevice', _data, function(res){
       console.log("disconnectWXDevice", res);
     });
   }
 
   function sendDataToWXDevice(deviceId, buf, cb){
-    var _data = {"deviceId":deviceId, "base64Data": buf};
+    var _data = mixin({"deviceId":deviceId, "base64Data": buf}, signData);
     WeixinJSBridge.invoke('sendDataToWXDevice', _data, function(res){
       console.log("sendDataToWXDevice", res);
     });
   }
 
   function startScanWXDevice(cb){
-    var _data = {btVersion:'ble'};
+    var _data = mixin({btVersion:'ble'}, signData);
     WeixinJSBridge.invoke('startScanWXDevice', _data, function(res){
       console.log("startScanWXDevice", res);
     });
@@ -180,5 +179,12 @@
     });
   }
 
+  function mixin(target, src) {
+    Object.getOwnPropertyNames(src).forEach(function(name) {
+      var descriptor = Object.getOwnPropertyDescriptor(src, name);
+      Object.defineProperty(target, name, descriptor);
+    });
+    return target;
+  }
 
 })(window);
