@@ -8,9 +8,16 @@ if (!fs.existsSync(accessTokenFile)) {
   fs.appendFileSync(accessTokenFile, '', {encoding: 'utf8'});
 }
 
+var jsApiTicketFile = path.join(__dirname, '../jsapi_ticket.txt');
+
+if (!fs.existsSync(jsApiTicketFile)) {
+  fs.appendFileSync(jsApiTicketFile, '', {encoding: 'utf8'});
+}
+
 var weixin = require("weixin-trap")({
   attrNameProcessors: 'underscored',
   saveToken: function(token, callback){
+    token.saveTime = new Date().getTime();
     var tokenStr = JSON.stringify(token);
     fs.writeFile(accessTokenFile, tokenStr, {encoding: 'utf8'}, callback);
   },
@@ -20,8 +27,36 @@ var weixin = require("weixin-trap")({
       if (str) {
         token = JSON.parse(str);
       }
-      callback(null, token);
+      var time = new Date().getTime();
+      if (token && (time - token.saveTime) < (token.expireTime - 120)) {
+        return callback(null, token);
+      }
+      callback();
     });
+  },
+  saveTicketToken: function(type, token, callback) {
+    token.saveTime = new Date().getTime();
+    var tokenStr = JSON.stringify(token);
+    fs.writeFile(jsApiTicketFile, tokenStr, {encoding: 'utf8'}, callback);
+  },
+  getTicketToken: function(type, callback) {
+    var that = this;
+    fs.readFile(jsApiTicketFile, {encoding: 'utf8'}, function(err, str){
+      var token;
+      if (str) {
+        token = JSON.parse(str);
+      }
+      var time = new Date().getTime();
+      if (token && (time - token.saveTime) < (token.expireTime - 120)) {
+        return callback(null, token);
+      }
+      that.api.getTicket(config.weixin.id, 'jsapi', function(err, token){
+        if (err) {
+          console.log('获取 jsapi 签名出错:  ', err);
+        }
+        callback(null, token);
+      });
+    });  
   },
   config: {
     id: config.weixin.id, // 微信公众号 id
