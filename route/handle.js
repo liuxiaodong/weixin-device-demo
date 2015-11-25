@@ -1,3 +1,4 @@
+var config = require('config');
 var weixin = require('../util/weixin');
 
 module.exports = function(app){
