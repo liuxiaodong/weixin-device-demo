@@ -40,7 +40,6 @@ var weixin = require("weixin-trap")({
     fs.writeFile(jsApiTicketFile, tokenStr, {encoding: 'utf8'}, callback);
   },
   getTicketToken: function(type, callback) {
-    var that = this;
     fs.readFile(jsApiTicketFile, {encoding: 'utf8'}, function(err, str){
       var token;
       if (str) {
@@ -49,8 +48,8 @@ var weixin = require("weixin-trap")({
       var time = new Date().getTime();
       if (token && (time - token.saveTime) < (token.expireTime - 120)) {
         return callback(null, token);
-      }
-      that.api.getTicket(config.weixin.id, 'jsapi', function(err, token){
+      }      
+      weixin.api.getTicket(config.weixin.id, 'jsapi', function(err, token){
         if (err) {
           console.log('获取 jsapi 签名出错:  ', err);
         }
