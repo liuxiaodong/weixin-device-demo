@@ -28,25 +28,25 @@ var weixin = require("weixin-trap")({
         token = JSON.parse(str);
       }
       var time = new Date().getTime();
-      if (token && (time - token.saveTime) < (token.expireTime - 120)) {
+      if (token && (time - token.saveTime) < ((token.expireTime - 120) * 1000) ) {
         return callback(null, token);
       }
       callback();
     });
   },
-  saveTicketToken: function(type, token, callback) {
+  saveTicketToken: function(appid, type, token, callback) {
     token.saveTime = new Date().getTime();
     var tokenStr = JSON.stringify(token);
     fs.writeFile(jsApiTicketFile, tokenStr, {encoding: 'utf8'}, callback);
   },
-  getTicketToken: function(type, callback) {
+  getTicketToken: function(callback) {
     fs.readFile(jsApiTicketFile, {encoding: 'utf8'}, function(err, str){
       var token;
       if (str) {
         token = JSON.parse(str);
       }
       var time = new Date().getTime();
-      if (token && (time - token.saveTime) < (token.expireTime - 120)) {
+      if (token && (time - token.saveTime) < ((token.expireTime - 120) * 1000) ) {
         return callback(null, token);
       }      
       weixin.api.getTicket(config.weixin.id, 'jsapi', function(err, token){

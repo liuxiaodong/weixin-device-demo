@@ -8,7 +8,7 @@
     "ejs": "^2.3.4",
     "express": "^4.12.3",
     "morgan": "^1.6.1",
-    "weixin-trap": "0.0.9"
+    "weixin-trap": "0.0.10"
   },
   "devDependencies": {},
   "scripts": {
