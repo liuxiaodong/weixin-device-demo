@@ -92,16 +92,24 @@ weixin.trap.text(/\S/, function(req, res){
 
 /**
  * 接受设备发送到的消息并回复
- * wx 模块在 npm 上可能没有 device 接口，但可以下载源码自己编译
  */
 /**
 weixin.trap.device(function(req, res){
-  var content = req.content;
+  //res.device(new Buffer("1111", "hex")); // 响应设备
+  var openid = req.body.from_user_name;
+  var content = req.body.content;
   if(content) {
     content = content.trim();
-    content = new Buffer(content, 'base64').toString()
+    content = new Buffer(content, 'base64').toString();
   }
-  res.device('123456'); // 响应设备
+  var id = req.body.device_id;
+  var replyText = id + ' 说:  ';
+  if (content) {
+    replyText += content;
+  } else {
+    replyText += '什么都不想说';
+  }
+  weixin.api.sendText(appid, openid, replyText);
 });
  */
 
